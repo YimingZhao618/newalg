@@ -1,0 +1,93 @@
+pypi 清华大学源：https://pypi.tuna.tsinghua.edu.cn/simple
+pypi 腾讯源：http://mirrors.cloud.tencent.com/pypi/simple
+pypi 阿里源：https://mirrors.aliyun.com/pypi/simple/
+pypi 豆瓣源 ：http://pypi.douban.com/simple/
+
+ssh链接linux用root：https://blog.csdn.net/xiaofeng_yang/article/details/138597300
+
+换源教程：
+https://blog.csdn.net/qq_28513801/article/details/140867294?ops_request_misc=%257B%2522request%255Fid%2522%253A%252243f85b1c9a1b26cfd56a56b66cddea3c%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=43f85b1c9a1b26cfd56a56b66cddea3c&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-140867294-null-null.142^v102^pc_search_result_base7&utm_term=linux%20pip%E6%8D%A2%E6%BA%90&spm=1018.2226.3001.4187
+
+nohup: > MMM.out 2>&1 & 
+
+vnc
+本地 ssh -L 5902:127.0.0.1:5902 -p 22 fangwenhao@121.248.201.12
+服务器  export DISPLAY=:2
+打开vncviewer.exe
+密码fangwenhao
+服务器 firefox
+
+清除进程
+ps aux | grep 'madp'
+pkill -f madp
+
+ps aux | grep 'StarCraftII'
+ps -eo pid,user,lstart,cmd | grep 'StarCraftII' #列出详细启动时间
+pkill -f fang/StarCraftII
+
+ps aux | grep 'hpn_qmix'
+pkill -f hpn_qmix
+ps aux | grep 'qmix'
+pkill -f qmix
+
+ps aux | grep 'hpn_qgattenmix'
+pkill -f hpn_qgattenmix
+ps aux | grep 'hpn_qgroupmix_atten'
+ps aux | grep 243974
+pkill -f hpn_qgroupmix_atten
+
+ps aux | grep 'Kalei_qmix_rnn_1R3'
+pkill -f Kalei_qmix_rnn_1R3
+
+ps aux | grep 'python'
+
+杀死主进程下的进程树(但不包括进程本身，所以还要额外杀一次）
+pkill -9 -P <PID>
+
+
+actions_noObsNoise_tamper 用无噪声观测生成的并修改后的动作选择
+actions_noObsNoise 用无噪声观测生成的动作选择
+
+conda命令
+conda env list
+conda create -n myenv python=3.8
+克隆环境：conda create -n <新环境名称> --clone <原环境名称>
+
+递归删除某文件夹下所有内容
+rm -rf 你的文件夹名
+
+拷贝
+递归拷贝所有内容（不包括文件夹）cp -r source_folder/. target_folder/
+递归拷贝所有内容（包括文件夹）cp -r source_folder target_folder/
+
+重命名文件夹（和移动同一个名）
+mv 旧文件夹名 新文件夹名
+注意：如果新文件名不存在，那就是重命名；如果存在，那就是把旧文件夹连带里面所有内容，移动到新文件夹中
+
+
+linux命令
+文件夹：
+mkdir <文件夹名称1> <文件夹名称2> <文件夹名称3> ...
+mkdir -p parent_folder/child_folder/grandchild_folder
+解压：
+unzip [选项] 压缩包名 -d 目标文件夹
+压缩：
+zip -r mydocuments.zip mydocuments/
+
+win命令:
+远程开jupyterlab（打开多个shell分别运行）
+乔脚边：ssh -L 8888:127.0.0.1:8888 -p 22 qct@121.248.201.11   密码：qct853573
+我脚边：ssh -L 8887:127.0.0.1:8888 -p 22 root@121.248.201.30  密码：32ro11ot
+CCF服务器：ssh -L 8886:127.0.0.1:8889 -p 30084 root@36.103.203.216 密码：890a74feb5bb18d31804e30dc9a1c0f6
+2506新的4090：fang 10.196.85.19 HHU##18305166195
+
+装miniconda：
+最好是从https://repo.anaconda.com/miniconda/ 去找一个符合条件的版本，别忘了-Linux-x86_64，下面是python3 10.25的版本
+wget https://repo.anaconda.com/miniconda/Miniconda3-py310_25.11.1-1-Linux-x86_64.sh
+下载的时候同意自动initialization，这样就自动启动base环境，如果没有（base）正常出来，那就source ~/.bashrc一下试试
+
+
+tensorboard 使用：
+要使用最好是内网机器使用，或者本机使用
+# 假设日志在 ～/experiments/run1
+tensorboard --logdir /home/fang/fwh_newalg/results/tb_logs --host 0.0.0.0 --port 6006

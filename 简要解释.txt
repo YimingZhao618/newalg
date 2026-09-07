@@ -1,0 +1,2 @@
+前向传播：main.py调用run.py，run.py调用runners.parallel_runner，runners.parallel_runner调用controllers.*_controller.py生成每个时间步的智能体动作，与环境交互产生数据(EpisodeBatch)，run.py调用components.episode_buffer存储数据
+反向传播：run.py调用components.episode_buffer采样数据，run.py调用learners.*_learner.py，*_learner.py调用controllers.*_controller.py生成每个时间步的智能体动作,估计个体Q值，调用modules.mixers.*.py估计联合Q值，进行训练

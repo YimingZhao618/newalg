@@ -1,0 +1,141 @@
+def train(self, batch: EpisodeBatch, t_env: int, episode_num: int):
+        # ... [前面的代码保持不变] ...
+        
+        # ... [跳过 Planning Transformer training 部分] ...
+
+        # ... [跳过 Get the relevant quantities 和正常 loss 计算部分] ...
+
+        ######################################################
+        # Qdifference transformer training
+        actions = batch["actions"][:, :-1]
+        actions_onehot = batch["actions_onehot"][:, :-1]
+        attacker_actions = batch["attacker_actions"][:, :-1]
+        attacker_actions_onehot = batch["attacker_actions_onehot"][:, :-1]
+        state = batch["state"][:, :-1]
+        hidden_states = batch["hidden_states"][:, :-1]
+        avail_actions = batch["avail_actions"]
+        
+        # === 新增：获取 Obs 并准备切片 ===
+        obs = batch["obs"][:, :-1] 
+        # ==============================
+
+        mac_out_detach = mac_out_temp.clone().detach()
+        chosen_action_qvals_attack = th.gather(mac_out_detach[:, :-1], dim=3, index=attacker_actions).squeeze(3)  
+        
+        normal_total_q = th.zeros_like(total_q_qmix_normal)
+        for t in range(total_q_qmix_normal.shape[1]):
+            end_idx = min(t + self.args.attack_duration, total_q_qmix_normal.shape[1])  
+            normal_total_q[:, t] = th.sum(total_q_qmix_normal[:, t:end_idx+1], dim=1)
+        normal_total_q = self.sliding_windows(normal_total_q, sis_list, window_size=self.args.trans_input_len)
+        attacked_total_q = th.zeros_like(total_q_qmix_normal).unsqueeze(2).repeat(1, 1, self.args.n_agents, 1)    
+        attacked_total_q = self.sliding_windows(attacked_total_q, sis_list, window_size=self.args.trans_input_len)
+
+        time_step = th.arange(start=0, end=state.shape[1], step=1, device=state.device).reshape(1, state.shape[1], 1).repeat(bs, 1, 1) 
+        now_time_step = self.sliding_window_with_padding(time_step)
+        now_time_step = self.sliding_windows(now_time_step, sis_list, window_size=self.args.trans_input_len)
+
+        with th.no_grad():
+            now_state = self.sliding_window_with_padding(state)
+            now_hidden_states = self.sliding_window_with_padding(hidden_states)
+            now_actions = self.sliding_window_with_padding(actions_onehot)
+
+            now_state = self.sliding_windows(now_state, sis_list, window_size=self.args.trans_input_len)
+            state_temp = copy.deepcopy(now_state)
+            now_hidden_states = self.sliding_windows(now_hidden_states, sis_list, window_size=self.args.trans_input_len)
+            now_actions = self.sliding_windows(now_actions, sis_list, window_size=self.args.trans_input_len)
+
+            now_actions_onehot = self.sliding_windows(actions_onehot, sis_list, window_size=self.args.trans_input_len)
+            now_attacker_actions_onehot = self.sliding_windows(attacker_actions_onehot, sis_list, window_size=self.args.trans_input_len)
+            now_avail_actions = self.sliding_windows(avail_actions, sis_list, window_size=self.args.trans_input_len)
+            initial_agent_t = self.sliding_windows(initial_agent, sis_list, window_size=self.args.trans_input_len)
+            followup_agents_t = self.sliding_windows(followup_agents, sis_list, window_size=self.args.trans_input_len)  
+
+            indi_q_slided = self.sliding_windows(indi_q.clone().detach(), sis_list, window_size=self.args.trans_input_len)
+            
+            # === 新增：对 Obs 进行切片 ===
+            # 确保 obs 的时间维度和 indi_q_slided 一致 (例如 20)
+            obs_slided = self.sliding_windows(obs, sis_list, window_size=self.args.trans_input_len)
+            # ==========================
+
+            batch_indices = th.arange(indi_q_slided.size(0)).unsqueeze(1).expand(-1, indi_q_slided.size(1))  # (32, 120)
+            time_indices = th.arange(indi_q_slided.size(1)).unsqueeze(0).expand(indi_q_slided.size(0), -1)  # (32, 120)
+
+            initial_agent_t = initial_agent_t.squeeze(-1)   
+            chosen_values = chosen_action_qvals_attack[batch_indices, time_indices, initial_agent_t]  # (32, 120)
+            indi_q_slided[batch_indices, time_indices, initial_agent_t] = chosen_values
+
+            # === 修改 1：这里传入 obs_slided 而不是 batch["obs"] ===
+            # 原代码报错行：total_q_qmix_attack_temp = self.mixer(indi_q_slided, state_slided, batch["obs"][:, :-1])
+            total_q_qmix_attack_temp = self.mixer(indi_q_slided, state_slided, obs_slided)
+            # ==================================================
+
+            attacked_total_q[batch_indices, time_indices, initial_agent_t] += total_q_qmix_attack_temp
+            do_actions = copy.deepcopy(now_actions_onehot)   
+            attacker_actions_onehot_t = copy.deepcopy(now_attacker_actions_onehot) 
+
+            chosen_attacker_actions_onehot_t = attacker_actions_onehot_t[batch_indices, time_indices, initial_agent_t]
+            do_actions[batch_indices, time_indices, initial_agent_t] = chosen_attacker_actions_onehot_t.float()
+
+            now_actions = now_actions[:, :, :-1]    
+            now_actions = th.cat((now_actions, do_actions.unsqueeze(2)), dim=2)
+
+            agent_id = th.eye(self.args.n_agents, device=batch.device).unsqueeze(0).unsqueeze(1).expand(bs, self.args.trans_input_len, -1, -1) 
+            for _ in range(self.args.attack_duration):
+                # ... [Transformer 预测循环代码保持不变] ...
+                now_state = now_state.reshape(-1, self.args.trans_input_len, state.shape[-1])
+                now_hidden_states = now_hidden_states.reshape(-1, self.args.trans_input_len, self.args.n_agents, hidden_states.shape[-1])
+                now_actions = now_actions.reshape(-1, self.args.trans_input_len, self.args.n_agents, now_actions.shape[-1])
+
+                predict_state, predict_obs_embed = self.planning_transformer(now_state, now_hidden_states, now_actions)  
+
+                now_state = now_state.reshape(bs, self.args.trans_input_len, self.args.trans_input_len, -1)
+                now_hidden_states = now_hidden_states.reshape(bs, self.args.trans_input_len, self.args.trans_input_len, self.args.n_agents, -1)
+                now_actions = now_actions.reshape(bs, self.args.trans_input_len, self.args.trans_input_len, self.args.n_agents, -1)
+                predict_state = predict_state.reshape(bs, self.args.trans_input_len, self.args.trans_input_len, -1)
+                predict_obs_embed = predict_obs_embed.reshape(bs, self.args.trans_input_len, self.args.trans_input_len, -1)
+
+                predict_state = predict_state[:, :, -1] 
+                predict_obs_embed = predict_obs_embed[:, :, -1]
+
+                obs_list = []
+                for i in range(self.args.n_agents):
+                    predict_obs_agent = self.planning_transformer.get_next_obs(predict_obs_embed, agent_id[:, :, i]) 
+                    obs_list.append(predict_obs_agent)
+                predict_obs = th.stack(obs_list, dim=2) 
+
+                predict_indi_q = self.mac.forward_action(batch, predict_obs, now_actions[:, :, -1], now_hidden_states[:, :, -1].detach())
+
+                # ... [动作选择逻辑保持不变] ...
+                predict_indi_q_action = predict_indi_q.clone().detach()
+                predict_indi_q_action[now_avail_actions == 0] = -9999999
+                predict_actions = predict_indi_q_action.max(dim=3, keepdim=True)[1]
+
+                predict_indi_q_ = predict_indi_q.clone().detach()
+                predict_chosen_q = th.gather(predict_indi_q_, dim=3, index=predict_actions).squeeze(-1) 
+
+                predict_indi_q_attack_action = predict_indi_q.clone().detach()
+                predict_indi_q_attack_action[now_avail_actions == 0] = +9999999
+                predict_attacker_actions = predict_indi_q_attack_action.min(dim=3, keepdim=True)[1]
+
+                predict_indi_q_attack = predict_indi_q.clone().detach()
+                predict_chosen_attacker_q = th.gather(predict_indi_q_attack, dim=3, index=predict_attacker_actions).squeeze(-1) 
+
+                do_actions = copy.deepcopy(predict_actions).squeeze(-1)
+                predict_attacker_actions = predict_attacker_actions.squeeze(-1)
+                indi_q_slided = predict_chosen_q.clone().detach() 
+
+                for agent in range(self.args.num_followup_agents):
+                    chosen_predict_chosen_attacker_q = predict_chosen_attacker_q[batch_indices, time_indices, followup_agents_t[:, :, agent]]
+                    indi_q_slided[batch_indices, time_indices, followup_agents_t[:, :, agent]] = chosen_predict_chosen_attacker_q
+                    chosen_predict_attacker_actions = predict_attacker_actions[batch_indices, time_indices, followup_agents_t[:, :, agent]]
+                    do_actions[batch_indices, time_indices, followup_agents_t[:, :, agent]] = chosen_predict_attacker_actions
+                
+                    # === 修改 2：这里使用 predict_state 和 predict_obs ===
+                    # 原代码：total_q_qmix_attack_temp = self.mixer(indi_q_slided, predict_state, batch["obs"][:, :-1])
+                    # 因为这里使用了预测状态 predict_state，Obs 也应该用 transformer 预测出的 predict_obs
+                    total_q_qmix_attack_temp = self.mixer(indi_q_slided, predict_state, predict_obs)
+                    # =================================================
+
+                    attacked_total_q[batch_indices, time_indices, initial_agent_t] += total_q_qmix_attack_temp
+
+                # ... [后续代码保持不变] ...

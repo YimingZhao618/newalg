@@ -1,0 +1,693 @@
+这个机器只给用卡1,如果要设置随机种子，直接实验命令seed=即可
+
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2 \
+with \
+env_args.map_name=1c3s5z \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=1005000000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=False \
+name='occupying'
+
+#####hpn_qstrans:####
+基础实验：
+MMM2:
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2 \
+with \
+env_args.map_name=MMM2 \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=False
+
+3s5z_VS_3s6z:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2 \
+with \
+env_args.map_name=3s5z_vs_3s6z \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=4 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=False
+
+1c3s5z:
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2 \
+with \
+env_args.map_name=1c3s5z \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=False \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002
+
+terran10_v_10:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py --config=hpn_qstrans --env-config=sc2_v2_terran_10_vs_10 with obs_agent_id=True obs_last_action=False runner=parallel batch_size_run=8 buffer_size=5000 t_max=10050000 epsilon_anneal_time=100000 batch_size=128 td_lambda=0.6 seed=42
+
+突然掉线：
+
+正常crash：
+terran:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_terran_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002 \
+crash_mode='normal' \
+name='qstrans_normal_crash_terren_10v10'
+
+crash 2：
+terran:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_terran_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002 \
+crash_mode='crash_2' \
+name='qstrans_2_crash_terren_10v10'
+
+terran_15_vs_15:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_terran_15_vs_15 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002 \
+crash_mode='crash_2' \
+name='qstrans_2_crash_terren_15v15'
+
+terran_20_vs_20:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_terran_20_vs_20 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002
+
+zerg:
+zerg_10_vs_10:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_zerg_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002 \
+crash_mode='crash_2' \
+name='qstrans_2_crash_zerg_10v10'
+
+zerg_15_vs_15:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_zerg_15_vs_15 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002 \
+crash_mode='crash_2' \
+name='qstrans_2_crash_zerg_15v15'
+
+zerg_20_vs_20:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_zerg_20_vs_20 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002
+
+
+protoss:
+protoss_10_vs_10:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_protoss_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002 \
+crash_mode='crash_2' \
+name='qstrans_2_crash_protoss_10v10'
+
+protoss_15_vs_15:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_protoss_15_vs_15 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002 
+
+protoss_20_vs_20:
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_protoss_20_vs_20 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002
+
+
+暂时crash：
+terran:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_terran_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002 \
+crash_mode='crash_temp' \
+temp_crash_timeLength=2000000 \
+name='qstrans_temp_crash_2M_terren_10v10'
+
+zerg:
+
+
+protoss:
+
+
+
+smacv1:
+MMM2:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2 \
+with \
+env_args.map_name=MMM2 \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+rec_explicit_ratio=0.8 \
+epsilon_anneal_time=500000 \
+epsilon_finish=0.06 \
+lr=0.002
+
+#####hpn_qmix:####
+MMM2:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2 \
+with \
+env_args.map_name=MMM2 \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=False
+
+3s5z_VS_3s6z:
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2 \
+with \
+env_args.map_name=3s5z_vs_3s6z \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=4 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=False
+
+1c3s5z:
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2 \
+with \
+env_args.map_name=1c3s5z \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=4 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=False
+
+terran10_v_10:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py --config=hpn_qmix --env-config=sc2_v2_terran_10_vs_10 with obs_agent_id=True obs_last_action=False runner=parallel batch_size_run=8 buffer_size=5000 t_max=10050000 epsilon_anneal_time=100000 batch_size=128 td_lambda=0.6
+接续训练terran9v10
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_terran_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+load_step=5000000 \
+checkpoint_path="/home/fang/fwh_newalg/results/models/sc2_v2_10gen_terran-obs_aid=1-obs_act=0-conic_fov=0/algo=hpn_qmix-agent=hpns_rnn/env_n=8/head_n=1-mixer=qmix-hpn_hyperdim=64-acti=relu-tdlambda=0.6/rnn_dim=64-2bs=5000_128-epdec_0.05=100k/hpn_qmix__2026-01-06_22-57-05"
+
+
+
+突然掉线：
+terran10_v_10:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_terran_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+terran15_v_15:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_terran_15_vs_15 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+terran20_v_20:
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_terran_20_vs_20 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+zerg10_v_10:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_zerg_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+zerg15_v_15:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_zerg_15_vs_15 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+zerg20_v_20:
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_zerg_20_vs_20 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+protoss10_v_10:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_protoss_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+protoss15_v_15:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_protoss_15_vs_15 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+protoss20_v_20:
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2_v2_protoss_20_vs_20 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+
+
+
+MMM2:
+CUDA_VISIBLE_DEVICES="3" python -u src/main.py \
+--config=hpn_qmix \
+--env-config=sc2 \
+with \
+env_args.map_name=MMM2 \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8 \
+prob_2nd=0.4
+
+
+#####qtype:####
+MMM2:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py --config=hpn_qgroupmix_atten --env-config=sc2 with env_args.map_name=MMM2 obs_agent_id=True obs_last_action=False runner=parallel batch_size_run=8 buffer_size=5000 t_max=10050000 epsilon_anneal_time=100000 batch_size=128 td_lambda=0.6 n_groups=3
+
+terran10_v_10:
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py --config=hpn_qgroupmix_atten --env-config=sc2_v2_terran_10_vs_10 with obs_agent_id=True obs_last_action=False runner=parallel batch_size_run=8 buffer_size=5000 t_max=10050000 epsilon_anneal_time=100000 batch_size=128 td_lambda=0.6 n_groups=3
+
+突然掉线：
+CUDA_VISIBLE_DEVICES="2" python -u src/main.py \
+--config=hpn_qgroupmix_atten \
+--env-config=sc2_v2_terran_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+epsilon_anneal_time=100000 \
+batch_size=128 \
+td_lambda=0.6 \
+n_groups=3 \
+crash_model=True \
+t_crash=5000000 \
+seed=44 \
+rec_explicit_ratio=0.8
+
+
+接续训练terran9v10
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_terran_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+seed=42 \
+load_step=5000000 \
+checkpoint_path="/home/fang/fwh_newalg/results/models/sc2_v2_10gen_terran-obs_aid=1-obs_act=0-conic_fov=0/algo=hpn_qstrans-agent=hpns_rnn/env_n=8/rnn_dim=64-2bs=5000_128-epdec_0.05=100k/hpn_qstrans__2026-01-07_11-02-49"
+
+CUDA_VISIBLE_DEVICES="1" python -u src/main.py \
+--config=hpn_qstrans \
+--env-config=sc2_v2_terran_10_vs_10 \
+with \
+obs_agent_id=True \
+obs_last_action=False \
+runner=parallel \
+batch_size_run=8 \
+buffer_size=5000 \
+t_max=10050000 \
+batch_size=128 \
+td_lambda=0.6 \
+seed=42 \
+load_step=5000000 \
+epsilon_anneal_time=100000 \
+epsilon_finish=0.05 \
+lr=0.001 \
+checkpoint_path="/home/fang/fwh_newalg/results/models/sc2_v2_10gen_terran-obs_aid=1-obs_act=0-conic_fov=0/algo=hpn_qstrans-agent=hpns_rnn/env_n=8/rnn_dim=64-2bs=5000_128-epdec_0.05=100k/hpn_qstrans__2026-01-07_11-02-49"

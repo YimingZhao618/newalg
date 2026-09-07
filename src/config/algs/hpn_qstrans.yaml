@@ -57,3 +57,4 @@ rec_explicit_ratio: 0.8
 prob_2nd: 0
 crash_mode: "normal" # normal / crash_2 / crash_temp
 temp_crash_timeLength: 2000000
+no_failure_control: False

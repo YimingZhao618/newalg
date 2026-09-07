@@ -32,6 +32,11 @@ class BasicMAC:
         # print("chosen_actions shape:", chosen_actions.shape)
         # print("chosen action content:", chosen_actions[0])
         # print("chosen_actions:", chosen_actions[])
+
+        # Explicit no-failure control: continue training after t_crash while
+        # disabling all legacy fixed-slot crash overrides.
+        if getattr(self.args, "no_failure_control", False):
+            return chosen_actions
         
         #crash 1
         if self.args.crash_model and self.args.crash_mode=='normal':
